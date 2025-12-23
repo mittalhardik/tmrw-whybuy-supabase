@@ -31,8 +31,15 @@ COPY backend/app ./app
 # Copy Built Frontend Assets
 COPY --from=frontend-build /app/frontend/dist ./frontend_dist
 
+# Copy Entrypoint Script
+COPY entrypoint.sh .
+RUN chmod +x entrypoint.sh
+
 # Environment Variables
 ENV PORT=8080
 
-# Command to run the application
-CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}
+# Set Entrypoint
+ENTRYPOINT ["./entrypoint.sh"]
+
+# Command to run the application (passed to entrypoint)
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]

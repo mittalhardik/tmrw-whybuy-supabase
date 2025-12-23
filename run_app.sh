@@ -36,6 +36,21 @@ if [ ! -d "node_modules" ]; then
     npm install
 fi
 
+# Generate env.js from .env for runtime configuration
+if [ -f .env ]; then
+    echo "Generating public/env.js..."
+    VITE_SUPABASE_URL=$(grep "VITE_SUPABASE_URL" .env | cut -d '=' -f2- | tr -d '"' | tr -d "'")
+    VITE_SUPABASE_KEY=$(grep "VITE_SUPABASE_KEY" .env | cut -d '=' -f2- | tr -d '"' | tr -d "'")
+    
+    mkdir -p public
+    cat > public/env.js <<EOF
+window.env = {
+  VITE_SUPABASE_URL: "$VITE_SUPABASE_URL",
+  VITE_SUPABASE_KEY: "$VITE_SUPABASE_KEY"
+};
+EOF
+fi
+
 # Run frontend in background
 npm run dev &
 FRONTEND_PID=$!
