@@ -1,7 +1,8 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseKey = import.meta.env.VITE_SUPABASE_KEY
+// Prioritize runtime env (from /env.js) over build-time env
+const supabaseUrl = window.env?.VITE_SUPABASE_URL || import.meta.env.VITE_SUPABASE_URL
+const supabaseKey = window.env?.VITE_SUPABASE_KEY || import.meta.env.VITE_SUPABASE_KEY
 
 console.log("DEBUG: Supabase Config Check");
 console.log("URL:", supabaseUrl ? "Set" : "Missing");

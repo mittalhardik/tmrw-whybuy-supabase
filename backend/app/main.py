@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import os
@@ -41,6 +41,20 @@ if frontend_dist_path.exists():
     assets_path = frontend_dist_path / "assets"
     if assets_path.exists():
         app.mount("/assets", StaticFiles(directory=str(assets_path)), name="assets")
+
+    # Serve runtime environment configuration
+    @app.get("/env.js")
+    async def get_env():
+        supabase_url = os.environ.get("SUPABASE_URL", "")
+        supabase_key = os.environ.get("SUPABASE_KEY", "")
+        # Add any other public env vars here
+        content = f"""
+        window.env = {{
+            VITE_SUPABASE_URL: "{supabase_url}",
+            VITE_SUPABASE_KEY: "{supabase_key}"
+        }};
+        """
+        return Response(content=content, media_type="application/javascript")
 
     # Catch-all route to serve index.html or other static files in root
     @app.get("/{full_path:path}")
