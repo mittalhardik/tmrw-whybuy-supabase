@@ -23,4 +23,4 @@ COPY --from=frontend-build /app/frontend/dist ./frontend_dist
 ENV PORT=8080
 
 # Command to run the application
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}
