@@ -51,24 +51,7 @@ if frontend_dist_path.exists():
     if assets_path.exists():
         app.mount("/assets", StaticFiles(directory=str(assets_path)), name="assets")
 
-    # Serve runtime environment configuration
-    @app.get("/env.js")
-    async def get_env():
-        supabase_url = os.environ.get("SUPABASE_URL", "")
-        supabase_key = os.environ.get("SUPABASE_KEY", "")
-        
-        # Debugging: Print to server logs
-        print(f"DEBUG: Serving env.js via Runtime Injection. URL set: {bool(supabase_url)}")
 
-        content = f"""
-        console.log("DEBUG: Loading Runtime Env from /env.js");
-        window.env = {{
-            VITE_SUPABASE_URL: "{supabase_url}",
-            VITE_SUPABASE_KEY: "{supabase_key}"
-        }};
-        console.log("DEBUG: Runtime Env Loaded. URL present:", !!window.env.VITE_SUPABASE_URL);
-        """
-        return Response(content=content, media_type="application/javascript", headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
 
     # Catch-all route to serve index.html or other static files in root
     @app.get("/{full_path:path}")
