@@ -6,12 +6,12 @@ RUN npm install
 COPY frontend/ ./
 
 # Build Arguments (passed via --build-arg)
-ARG VITE_SUPABASE_URL
-ARG VITE_SUPABASE_KEY
+ARG SUPABASE_URL
+ARG SUPABASE_KEY
 
 # Set as Environment Variables for the build process
-ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
-ENV VITE_SUPABASE_KEY=$VITE_SUPABASE_KEY
+ENV VITE_SUPABASE_URL=$SUPABASE_URL
+ENV VITE_SUPABASE_KEY=$SUPABASE_KEY
 
 RUN npm run build
 
