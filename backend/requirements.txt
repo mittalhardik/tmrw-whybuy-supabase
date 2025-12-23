@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+supabase
+python-dotenv
+python-multipart
+pandas
+openpyxl
+google-generativeai
+Pillow
+httpx
