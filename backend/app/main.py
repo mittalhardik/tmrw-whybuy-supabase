@@ -20,6 +20,15 @@ app.add_middleware(
 async def health_check():
     return {"status": "ok"}
 
+@app.get("/api/debug-config")
+async def debug_config():
+    return {
+        "supabase_url_set": bool(os.environ.get("SUPABASE_URL")),
+        "supabase_key_set": bool(os.environ.get("SUPABASE_KEY")),
+        "frontend_dist_exists": frontend_dist_path.exists(),
+        "index_html_exists": (frontend_dist_path / "index.html").exists()
+    }
+
 # Routers
 from .routers import brands, products, pipeline, prompts, dashboard
 app.include_router(brands.router)
@@ -47,14 +56,19 @@ if frontend_dist_path.exists():
     async def get_env():
         supabase_url = os.environ.get("SUPABASE_URL", "")
         supabase_key = os.environ.get("SUPABASE_KEY", "")
-        # Add any other public env vars here
+        
+        # Debugging: Print to server logs
+        print(f"DEBUG: Serving env.js via Runtime Injection. URL set: {bool(supabase_url)}")
+
         content = f"""
+        console.log("DEBUG: Loading Runtime Env from /env.js");
         window.env = {{
             VITE_SUPABASE_URL: "{supabase_url}",
             VITE_SUPABASE_KEY: "{supabase_key}"
         }};
+        console.log("DEBUG: Runtime Env Loaded. URL present:", !!window.env.VITE_SUPABASE_URL);
         """
-        return Response(content=content, media_type="application/javascript")
+        return Response(content=content, media_type="application/javascript", headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
 
     # Catch-all route to serve index.html or other static files in root
     @app.get("/{full_path:path}")
