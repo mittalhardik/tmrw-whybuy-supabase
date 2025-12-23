@@ -19,3 +19,6 @@ images:
 substitutions:
   _SUPABASE_URL: ""
   _SUPABASE_KEY: ""
+
+options:
+  logging: CLOUD_LOGGING_ONLY
