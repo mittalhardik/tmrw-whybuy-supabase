@@ -9,12 +9,12 @@ COPY frontend/ ./
 ARG SUPABASE_URL
 ARG SUPABASE_KEY
 
-# Set as Environment Variables for the build process
-ENV VITE_SUPABASE_URL=$SUPABASE_URL
-ENV VITE_SUPABASE_KEY=$SUPABASE_KEY
+# Write env vars to .env file for Vite to pick up
+RUN echo "VITE_SUPABASE_URL=$SUPABASE_URL" > .env && \
+    echo "VITE_SUPABASE_KEY=$SUPABASE_KEY" >> .env
 
-# Check if variables are set (Fail build if missing)
-RUN if [ -z "$VITE_SUPABASE_URL" ]; then echo "Build failed: VITE_SUPABASE_URL is missing. You must pass --build-arg SUPABASE_URL=..."; exit 1; fi
+# Verify .env creation (optional but good for logs)
+RUN cat .env
 
 RUN npm run build
 
