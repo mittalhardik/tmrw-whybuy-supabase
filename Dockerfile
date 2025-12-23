@@ -13,6 +13,9 @@ ARG SUPABASE_KEY
 ENV VITE_SUPABASE_URL=$SUPABASE_URL
 ENV VITE_SUPABASE_KEY=$SUPABASE_KEY
 
+# Check if variables are set (Fail build if missing)
+RUN if [ -z "$VITE_SUPABASE_URL" ]; then echo "Build failed: VITE_SUPABASE_URL is missing. You must pass --build-arg SUPABASE_URL=..."; exit 1; fi
+
 RUN npm run build
 
 # Final Stage for Backend
