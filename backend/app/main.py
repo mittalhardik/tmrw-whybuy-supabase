@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Response
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import os
@@ -20,15 +20,6 @@ app.add_middleware(
 async def health_check():
     return {"status": "ok"}
 
-@app.get("/api/debug-config")
-async def debug_config():
-    return {
-        "supabase_url_set": bool(os.environ.get("SUPABASE_URL")),
-        "supabase_key_set": bool(os.environ.get("SUPABASE_KEY")),
-        "frontend_dist_exists": frontend_dist_path.exists(),
-        "index_html_exists": (frontend_dist_path / "index.html").exists()
-    }
-
 # Routers
 from .routers import brands, products, pipeline, prompts, dashboard
 app.include_router(brands.router)
@@ -38,35 +29,9 @@ app.include_router(prompts.router)
 app.include_router(dashboard.router)
 
 # Static files (Frontend)
-from fastapi.responses import FileResponse
-
-# Determine path to frontend build
-frontend_dist_path = Path("frontend_dist")  # Docker path
-if not frontend_dist_path.exists():
-    frontend_dist_path = Path("../frontend/dist")  # Local dev path
-
-if frontend_dist_path.exists():
-    # Mount assets folder explicitly if it exists (Vite output usually has an assets folder)
-    assets_path = frontend_dist_path / "assets"
-    if assets_path.exists():
-        app.mount("/assets", StaticFiles(directory=str(assets_path)), name="assets")
-
-
-
-    # Catch-all route to serve index.html or other static files in root
-    @app.get("/{full_path:path}")
-    async def serve_spa(full_path: str):
-        # Prevent accessing API routes (though they are matched first)
-        if full_path.startswith("api/"):
-            return {"detail": "Not Found"}
-            
-        # Check if file exists (e.g., vite.svg, favicon.ico)
-        file_path = frontend_dist_path / full_path
-        if file_path.exists() and file_path.is_file():
-            return FileResponse(file_path)
-            
-        # Fallback to index.html for SPA routing
-        return FileResponse(frontend_dist_path / "index.html")
+# In production, we build React and serve 'dist' from here or Nginx
+# For now, placeholder for where static files will go
+# app.mount("/", StaticFiles(directory="../frontend/dist", html=True), name="static")
 
 if __name__ == "__main__":
     import uvicorn
