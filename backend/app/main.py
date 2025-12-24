@@ -21,12 +21,13 @@ async def health_check():
     return {"status": "ok"}
 
 # Routers
-from .routers import brands, products, pipeline, prompts, dashboard
+from .routers import brands, products, pipeline, prompts, dashboard, sync
 app.include_router(brands.router)
 app.include_router(products.router)
 app.include_router(pipeline.router)
 app.include_router(prompts.router)
 app.include_router(dashboard.router)
+app.include_router(sync.router)
 
 # Static files (Frontend)
 # In production, we build React and serve 'dist' from here or Nginx

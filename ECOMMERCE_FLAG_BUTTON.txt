@@ -1,0 +1,26 @@
+// EXACT REPLACEMENT FOR LINES 509-520
+// Copy this ENTIRE block and paste it to replace lines 509-520
+
+                                                    {/* Actions */}
+                                                    <div className="pt-4 border-t space-y-2">
+                                                        <button
+                                                            onClick={() => handleFlagImage('ecommerce', i, !img.flagged)}
+                                                            className={`w-full px-4 py-2 rounded-lg font-medium text-sm flex items-center justify-center gap-2 transition-all ${
+                                                                img.flagged 
+                                                                    ? 'bg-orange-500 text-white hover:bg-orange-600 shadow-md' 
+                                                                    : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+                                                            }`}
+                                                        >
+                                                            <Flag size={16} />
+                                                            {img.flagged ? 'Unflag Image' : 'Flag Image'}
+                                                        </button>
+                                                        <a 
+                                                            href={img.shopify_cdn_url || img.image_path} 
+                                                            target="_blank" 
+                                                            rel="noopener noreferrer"
+                                                            className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 text-sm bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg font-medium"
+                                                        >
+                                                            <Download size={16} />
+                                                            Download
+                                                        </a>
+                                                    </div>

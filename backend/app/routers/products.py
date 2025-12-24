@@ -1,8 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import Optional, List
 from ..auth import get_current_user
 from ..supabase_client import supabase
-from ..services.upload_service import UploadService
 from ..services.shopify_service import ShopifyService
 from pydantic import BaseModel
 
@@ -28,19 +27,28 @@ async def push_to_shopify(payload: PushPayload, user=Depends(get_current_user)):
         b_res = supabase.table("brands").select("*").eq("id", payload.brand_id).execute()
         if not b_res.data:
             raise HTTPException(status_code=404, detail="Brand not found")
-        brand_config = b_res.data[0].get("config", {})
+        brand_config = b_res.data[0].get("shopify_config", {})
 
-        # 3. Push
+        # 3. Push to Shopify
         result = await ShopifyService.push_product(product, brand_config)
         
-        # 4. Update Status
-        supabase.table("products").update({
+        # 4. Update Status and generated_content with CDN URLs
+        update_data = {
             "push_status": "pushed",
-            "pushed_at": "now()"
-        }).eq("id", payload.product_id).execute()
+            "pushed_at": "now()",
+            "metafield_synced_at": "now()"
+        }
+        
+        # If CDN URLs were added, update generated_content
+        if result.get("updated_generated_content"):
+            update_data["generated_content"] = result["updated_generated_content"]
+        
+        supabase.table("products").update(update_data).eq("id", payload.product_id).execute()
 
         return {"success": True, "details": result}
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/")
@@ -88,23 +96,6 @@ async def list_products(
     except Exception as e:
          raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/upload")
-async def upload_products(
-    file: UploadFile = File(...),
-    brand_id: str = Form(...),
-    user=Depends(get_current_user)
-):
-    """
-    Upload Shopify export file.
-    """
-    try:
-        if not file.filename.endswith(('.xlsx', '.xls')):
-             raise HTTPException(status_code=400, detail="Invalid file format. Please upload Excel file.")
-             
-        result = await UploadService.process_upload(file, brand_id)
-        return result
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/{product_id}")
 async def get_product(product_id: str, brand_id: str, user=Depends(get_current_user)):
@@ -122,4 +113,30 @@ async def get_product(product_id: str, brand_id: str, user=Depends(get_current_u
         print(f"Error getting product {product_id}: {e}")
         import traceback
         traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/{product_id}/flag-image")
+async def flag_image(
+    product_id: str, 
+    payload: dict,
+    brand_id: str = Query(...),
+    user=Depends(get_current_user)
+):
+    """
+    Flag or unflag a generated image (ecommerce or lookbook).
+    Automatically updates product-level flagged status.
+    """
+    from ..services.flag_service import FlagImagePayload, flag_product_image
+    
+    try:
+        # Parse payload
+        flag_payload = FlagImagePayload(**payload)
+        
+        # Call service
+        result = await flag_product_image(product_id, flag_payload, brand_id, user)
+        
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
