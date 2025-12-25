@@ -32,7 +32,7 @@ done
 
 # Start Next.js on the main PORT (exposed to Cloud Run)
 echo "Starting Next.js frontend on port $PORT..."
-cd /app/nextjs
+cd /app
 node server.js &
 FRONTEND_PID=$!
 

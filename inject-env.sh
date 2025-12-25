@@ -2,8 +2,8 @@
 # This script generates a JavaScript file with runtime environment variables
 # It will be called by the startup script before starting Next.js
 
-# Output file
-ENV_JS_FILE="/app/nextjs/public/env.js"
+# Output file - Next.js standalone puts public in the root
+ENV_JS_FILE="/app/public/env.js"
 
 echo "Generating runtime environment configuration..."
 

@@ -43,10 +43,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy backend application
 COPY backend/app ./app
 
-# Copy Next.js standalone build
-COPY --from=frontend-build /app/frontend/.next/standalone ./nextjs
-COPY --from=frontend-build /app/frontend/.next/static ./nextjs/.next/static
-COPY --from=frontend-build /app/frontend/public ./nextjs/public
+# Copy Next.js standalone build - server.js is in the standalone root
+COPY --from=frontend-build /app/frontend/.next/standalone ./
+COPY --from=frontend-build /app/frontend/.next/static ./.next/static
+COPY --from=frontend-build /app/frontend/public ./public
 
 # Copy startup scripts
 COPY start.sh inject-env.sh ./
