@@ -1,6 +1,10 @@
 # Build Stage for Frontend
 FROM node:20-alpine AS frontend-build
 
+# Build arguments for environment variables
+ARG NEXT_PUBLIC_SUPABASE_URL
+ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
+
 WORKDIR /app/frontend
 
 # Copy package files
@@ -10,8 +14,12 @@ RUN npm ci
 # Copy frontend source
 COPY frontend-nextjs/ ./
 
-# Build Next.js in standalone mode
+# Set environment variables from build args
+ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
+ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
 ENV NEXT_TELEMETRY_DISABLED=1
+
+# Build Next.js in standalone mode
 RUN npm run build
 
 # Final Stage - Python Backend serving Next.js
