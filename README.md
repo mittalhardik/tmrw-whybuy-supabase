@@ -29,7 +29,7 @@ A Next.js + FastAPI application for AI-powered product content generation, built
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 20+
 - Python 3.10+
 - Supabase account
 - Google Gemini API key
