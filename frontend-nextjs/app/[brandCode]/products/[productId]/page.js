@@ -25,6 +25,7 @@ export default function ProductDetailPage() {
     const [showPipelineConfig, setShowPipelineConfig] = useState(false);
     const [pipelineConfig, setPipelineConfig] = useState({ ecommerce: true, lookbook: true });
     const [activeTab, setActiveTab] = useState('metadata');
+    const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
     useEffect(() => {
         if (currentBrand && productId) {
@@ -348,20 +349,64 @@ export default function ProductDetailPage() {
                 {/* Visual Sidebar */}
                 <div className="lg:col-span-1 space-y-6">
                     <div className="glass p-4 rounded-xl">
-                        <div className="aspect-[3/4] bg-gray-100 rounded-lg overflow-hidden border">
-                            {product.image_urls && product.image_urls[0] ? (
-                                <img src={product.image_urls[0]} alt="Original" className="w-full h-full object-cover" />
+                        <div className="relative aspect-[3/4] bg-gray-100 rounded-lg overflow-hidden border group">
+                            {product.image_urls && product.image_urls.length > 0 ? (
+                                <>
+                                    <img
+                                        src={product.image_urls[selectedImageIndex]}
+                                        alt={`Product image ${selectedImageIndex + 1}`}
+                                        className="w-full h-full object-cover"
+                                    />
+
+                                    {/* Image Counter */}
+                                    <div className="absolute top-3 right-3 bg-black/60 text-white px-2 py-1 rounded-md text-xs font-medium backdrop-blur-sm">
+                                        {selectedImageIndex + 1} / {product.image_urls.length}
+                                    </div>
+
+                                    {/* Navigation Arrows */}
+                                    {product.image_urls.length > 1 && (
+                                        <>
+                                            <button
+                                                onClick={() => setSelectedImageIndex(prev => prev > 0 ? prev - 1 : product.image_urls.length - 1)}
+                                                className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80"
+                                                aria-label="Previous image"
+                                            >
+                                                <ArrowLeft size={20} />
+                                            </button>
+                                            <button
+                                                onClick={() => setSelectedImageIndex(prev => prev < product.image_urls.length - 1 ? prev + 1 : 0)}
+                                                className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80"
+                                                aria-label="Next image"
+                                            >
+                                                <ArrowLeft size={20} className="rotate-180" />
+                                            </button>
+                                        </>
+                                    )}
+                                </>
                             ) : (
                                 <div className="flex items-center justify-center h-full text-gray-400">No Image</div>
                             )}
                         </div>
-                        <div className="mt-4 grid grid-cols-3 gap-2">
-                            {product.image_urls?.slice(0, 3).map((url, i) => (
-                                <div key={i} className="aspect-square bg-gray-50 rounded-md overflow-hidden border cursor-pointer hover:ring-2 hover:ring-primary">
-                                    <img src={url} alt="" className="w-full h-full object-cover" />
+
+                        {/* Scrollable Thumbnail Grid */}
+                        {product.image_urls && product.image_urls.length > 0 && (
+                            <div className="mt-4 max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+                                <div className="grid grid-cols-3 gap-2">
+                                    {product.image_urls.map((url, i) => (
+                                        <div
+                                            key={i}
+                                            onClick={() => setSelectedImageIndex(i)}
+                                            className={`aspect-square bg-gray-50 rounded-md overflow-hidden border cursor-pointer transition-all ${selectedImageIndex === i
+                                                    ? 'ring-2 ring-primary ring-offset-2'
+                                                    : 'hover:ring-2 hover:ring-gray-300'
+                                                }`}
+                                        >
+                                            <img src={url} alt={`Thumbnail ${i + 1}`} className="w-full h-full object-cover" />
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
+                            </div>
+                        )}
                     </div>
 
                     <div className="glass p-4 rounded-xl space-y-3">
