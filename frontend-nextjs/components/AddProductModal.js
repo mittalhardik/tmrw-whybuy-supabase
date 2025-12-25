@@ -42,7 +42,7 @@ export default function AddProductModal({ currentBrand, onSuccess }) {
 
             if (isBatch) {
                 // Use batch endpoint
-                const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/sync/products/batch`, {
+                const res = await fetch(`/api/sync/products/batch`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${authToken}`,
@@ -76,7 +76,7 @@ export default function AddProductModal({ currentBrand, onSuccess }) {
                 }
             } else {
                 // Use single endpoint for backward compatibility
-                const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/sync/product`, {
+                const res = await fetch(`/api/sync/product`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${authToken}`,
@@ -261,8 +261,8 @@ export default function AddProductModal({ currentBrand, onSuccess }) {
                                     <div
                                         key={idx}
                                         className={`p-3 rounded-lg border ${result.success
-                                                ? 'bg-green-50 border-green-200'
-                                                : 'bg-red-50 border-red-200'
+                                            ? 'bg-green-50 border-green-200'
+                                            : 'bg-red-50 border-red-200'
                                             }`}
                                     >
                                         <div className="flex items-start gap-3">

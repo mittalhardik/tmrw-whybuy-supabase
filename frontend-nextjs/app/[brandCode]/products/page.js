@@ -73,7 +73,7 @@ export default function Products() {
             if (filters.processed !== null) query += `&processed=${filters.processed}`;
             if (filters.push_status) query += `&push_status=${filters.push_status}`;
 
-            const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products/${query}`, {
+            const res = await fetch(`/api/products${query}`, {
                 headers: { 'Authorization': `Bearer ${authToken}` }
             });
             const data = await res.json();
@@ -94,7 +94,7 @@ export default function Products() {
         try {
             const { data: { session } } = await supabase.auth.getSession();
             const authToken = session?.access_token;
-            const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/pipeline/jobs?brand_id=${currentBrand.id}`, {
+            const res = await fetch(`/api/pipeline/jobs?brand_id=${currentBrand.id}`, {
                 headers: { 'Authorization': `Bearer ${authToken}` }
             });
             const data = await res.json();
@@ -117,7 +117,7 @@ export default function Products() {
             const { data: { session } } = await supabase.auth.getSession();
             const authToken = session?.access_token;
 
-            const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/pipeline/run`, {
+            const res = await fetch(`/api/pipeline/run`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${authToken}`,

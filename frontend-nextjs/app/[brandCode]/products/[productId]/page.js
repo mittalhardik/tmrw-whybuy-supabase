@@ -39,7 +39,7 @@ export default function ProductDetailPage() {
             const { data: { session } } = await supabase.auth.getSession();
             const authToken = session?.access_token;
 
-            const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/pipeline/product-status/${productId}?brand_id=${currentBrand.id}`, {
+            const res = await fetch(`/api/pipeline/product-status/${productId}?brand_id=${currentBrand.id}`, {
                 headers: { 'Authorization': `Bearer ${authToken}` }
             });
 
@@ -132,7 +132,7 @@ export default function ProductDetailPage() {
             const { data: { session } } = await supabase.auth.getSession();
             const authToken = session?.access_token;
 
-            const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/pipeline/run`, {
+            const res = await fetch(`/api/pipeline/run`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${authToken}`,
@@ -168,7 +168,7 @@ export default function ProductDetailPage() {
             const { data: { session } } = await supabase.auth.getSession();
             const authToken = session?.access_token;
 
-            const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products/${product.id}/flag-image?brand_id=${currentBrand.id}`, {
+            const res = await fetch(`/api/products/${product.id}/flag-image?brand_id=${currentBrand.id}`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${authToken}`,
@@ -255,7 +255,7 @@ export default function ProductDetailPage() {
                                     const { data: { session } } = await supabase.auth.getSession();
                                     const authToken = session?.access_token;
 
-                                    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/sync/product/${product.id}/refresh?brand_id=${currentBrand.id}`, {
+                                    const res = await fetch(`/api/sync/product/${product.id}/refresh?brand_id=${currentBrand.id}`, {
                                         method: 'POST',
                                         headers: { 'Authorization': `Bearer ${authToken}` }
                                     });
@@ -397,8 +397,8 @@ export default function ProductDetailPage() {
                                             key={i}
                                             onClick={() => setSelectedImageIndex(i)}
                                             className={`aspect-square bg-gray-50 rounded-md overflow-hidden border cursor-pointer transition-all ${selectedImageIndex === i
-                                                    ? 'ring-2 ring-primary ring-offset-2'
-                                                    : 'hover:ring-2 hover:ring-gray-300'
+                                                ? 'ring-2 ring-primary ring-offset-2'
+                                                : 'hover:ring-2 hover:ring-gray-300'
                                                 }`}
                                         >
                                             <img src={url} alt={`Thumbnail ${i + 1}`} className="w-full h-full object-cover" />
