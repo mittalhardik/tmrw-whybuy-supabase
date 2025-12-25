@@ -19,6 +19,11 @@ ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
 ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
 ENV NEXT_TELEMETRY_DISABLED=1
 
+# Debug: Show what values we received (will be visible in build logs)
+RUN echo "Build args received:" && \
+    echo "NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}" && \
+    echo "NEXT_PUBLIC_SUPABASE_ANON_KEY length: $(echo -n ${NEXT_PUBLIC_SUPABASE_ANON_KEY} | wc -c)"
+
 # Build Next.js in standalone mode
 RUN npm run build
 
