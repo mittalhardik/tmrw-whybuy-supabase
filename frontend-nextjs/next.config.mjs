@@ -10,11 +10,17 @@ const nextConfig = {
     ],
   },
   async rewrites() {
-    // Proxy all /api requests to FastAPI backend on port 8080
+    // In production (Cloud Run), both Next.js and FastAPI run in the same container
+    // FastAPI runs on 127.0.0.1:8081, Next.js on $PORT
+    // In development, FastAPI runs on localhost:8080
+    const backendUrl = process.env.NODE_ENV === 'production'
+      ? 'http://127.0.0.1:8081'
+      : 'http://localhost:8080';
+
     return [
       {
         source: '/api/:path*',
-        destination: 'http://localhost:8080/api/:path*',
+        destination: `${backendUrl}/api/:path*`,
       },
     ];
   },

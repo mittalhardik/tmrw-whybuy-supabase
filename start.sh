@@ -10,15 +10,15 @@ echo "Starting application on port $PORT..."
 echo "Injecting runtime environment variables..."
 /app/inject-env.sh
 
-# Start FastAPI backend in background on port 8080 (internal)
-echo "Starting FastAPI backend on port 8080..."
-uvicorn app.main:app --host 127.0.0.1 --port 8080 &
+# Start FastAPI backend in background on port 8081 (internal)
+echo "Starting FastAPI backend on port 8081..."
+uvicorn app.main:app --host 127.0.0.1 --port 8081 &
 BACKEND_PID=$!
 
 # Wait for backend to be ready
 echo "Waiting for backend to start..."
 for i in {1..30}; do
-    if curl -f http://127.0.0.1:8080/api/health > /dev/null 2>&1; then
+    if curl -f http://127.0.0.1:8081/api/health > /dev/null 2>&1; then
         echo "Backend is ready!"
         break
     fi
@@ -48,7 +48,7 @@ fi
 
 echo "Application started successfully!"
 echo "Frontend (Next.js): http://0.0.0.0:$PORT"
-echo "Backend (FastAPI): http://127.0.0.1:8080"
+echo "Backend (FastAPI): http://127.0.0.1:8081"
 
 # Function to handle shutdown
 cleanup() {
