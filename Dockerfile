@@ -1,10 +1,6 @@
 # Build Stage for Frontend
 FROM node:20-alpine AS frontend-build
 
-# Build arguments for environment variables
-ARG NEXT_PUBLIC_SUPABASE_URL
-ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
-
 WORKDIR /app/frontend
 
 # Copy package files
@@ -14,15 +10,11 @@ RUN npm ci
 # Copy frontend source
 COPY frontend-nextjs/ ./
 
-# Set environment variables from build args
-ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
-ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
+# Set placeholder environment variables for build
+# Real values will be injected at runtime via window.env
+ENV NEXT_PUBLIC_SUPABASE_URL=https://placeholder.supabase.co
+ENV NEXT_PUBLIC_SUPABASE_KEY=placeholder-anon-key
 ENV NEXT_TELEMETRY_DISABLED=1
-
-# Debug: Show what values we received (will be visible in build logs)
-RUN echo "Build args received:" && \
-    echo "NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}" && \
-    echo "NEXT_PUBLIC_SUPABASE_ANON_KEY length: $(echo -n ${NEXT_PUBLIC_SUPABASE_ANON_KEY} | wc -c)"
 
 # Build Next.js in standalone mode
 RUN npm run build
@@ -56,9 +48,9 @@ COPY --from=frontend-build /app/frontend/.next/standalone ./nextjs
 COPY --from=frontend-build /app/frontend/.next/static ./nextjs/.next/static
 COPY --from=frontend-build /app/frontend/public ./nextjs/public
 
-# Copy startup script
-COPY start.sh ./
-RUN chmod +x start.sh
+# Copy startup scripts
+COPY start.sh inject-env.sh ./
+RUN chmod +x start.sh inject-env.sh
 
 # Environment variables
 ENV NODE_ENV=production

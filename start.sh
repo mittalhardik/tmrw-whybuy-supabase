@@ -6,6 +6,10 @@ export PORT=${PORT:-8080}
 
 echo "Starting application on port $PORT..."
 
+# Inject runtime environment variables into Next.js
+echo "Injecting runtime environment variables..."
+/app/inject-env.sh
+
 # Start FastAPI backend in background on port 8080 (internal)
 echo "Starting FastAPI backend on port 8080..."
 uvicorn app.main:app --host 127.0.0.1 --port 8080 &

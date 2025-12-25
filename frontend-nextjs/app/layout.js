@@ -10,6 +10,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        {/* Load runtime environment variables (injected by Cloud Run) */}
+        <script src="/env.js" />
+      </head>
       <body className="antialiased">
         <AuthProvider>
           {children}
