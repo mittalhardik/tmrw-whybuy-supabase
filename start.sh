@@ -4,7 +4,7 @@ set -e
 # Get the port from environment or default to 8080
 export PORT=${PORT:-8080}
 
-echo "Starting application on port $PORT..."
+echo "Starting application with nginx on port $PORT..."
 
 # Inject runtime environment variables into Next.js
 echo "Injecting runtime environment variables..."
@@ -30,31 +30,51 @@ for i in {1..30}; do
     sleep 1
 done
 
-# Start Next.js on the main PORT (exposed to Cloud Run)
-echo "Starting Next.js frontend on port $PORT..."
+# Start Next.js on port 3000 (internal)
+echo "Starting Next.js frontend on port 3000..."
 cd /app
-node server.js &
+PORT=3000 node server.js &
 FRONTEND_PID=$!
 
 # Wait for frontend to be ready
 echo "Waiting for frontend to start..."
-sleep 5
+for i in {1..30}; do
+    if curl -f http://127.0.0.1:3000 > /dev/null 2>&1; then
+        echo "Frontend is ready!"
+        break
+    fi
+    if [ $i -eq 30 ]; then
+        echo "Frontend failed to start"
+        kill $BACKEND_PID $FRONTEND_PID 2>/dev/null || true
+        exit 1
+    fi
+    sleep 1
+done
 
-if ! kill -0 $FRONTEND_PID 2>/dev/null; then
-    echo "Frontend failed to start"
-    kill $BACKEND_PID 2>/dev/null || true
+# Start nginx on the main PORT
+echo "Starting nginx on port $PORT..."
+nginx -g "daemon off;" &
+NGINX_PID=$!
+
+# Wait a moment for nginx to start
+sleep 2
+
+if ! kill -0 $NGINX_PID 2>/dev/null; then
+    echo "Nginx failed to start"
+    kill $BACKEND_PID $FRONTEND_PID 2>/dev/null || true
     exit 1
 fi
 
 echo "Application started successfully!"
-echo "Frontend (Next.js): http://0.0.0.0:$PORT"
+echo "Nginx (Proxy): http://0.0.0.0:$PORT"
+echo "Frontend (Next.js): http://127.0.0.1:3000"
 echo "Backend (FastAPI): http://127.0.0.1:8081"
 
 # Function to handle shutdown
 cleanup() {
     echo "Shutting down..."
-    kill $FRONTEND_PID $BACKEND_PID 2>/dev/null || true
-    wait $FRONTEND_PID $BACKEND_PID 2>/dev/null || true
+    kill $NGINX_PID $FRONTEND_PID $BACKEND_PID 2>/dev/null || true
+    wait $NGINX_PID $FRONTEND_PID $BACKEND_PID 2>/dev/null || true
     exit 0
 }
 

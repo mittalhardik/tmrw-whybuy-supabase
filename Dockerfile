@@ -24,11 +24,12 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-# Install system dependencies including Node.js
+# Install system dependencies including Node.js and nginx
 RUN apt-get update && apt-get install -y \
     curl \
     ca-certificates \
     gnupg \
+    nginx \
     && mkdir -p /etc/apt/keyrings \
     && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
     && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
@@ -51,6 +52,11 @@ COPY --from=frontend-build /app/frontend/public ./public
 # Copy startup scripts
 COPY start.sh inject-env.sh ./
 RUN chmod +x start.sh inject-env.sh
+
+# Copy nginx configuration
+COPY nginx.conf /etc/nginx/sites-available/default
+RUN rm -f /etc/nginx/sites-enabled/default && \
+    ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 
 # Environment variables
 ENV NODE_ENV=production
