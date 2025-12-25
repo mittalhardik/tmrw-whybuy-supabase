@@ -352,13 +352,7 @@ class ShopifySyncService:
         
         # If this is a refresh and the product had generated content, clear it
         # This signals to the user that they need to reprocess after refreshing
-        if is_refresh and existing_product.data[0].get("generated_content"):
-            print(f"Refresh detected: Clearing generated_content for product {shopify_id}")
-            product_data["generated_content"] = None
-            product_data["processed"] = False
-            product_data["push_status"] = None
-            product_data["pushed_at"] = None
-            # Note: We don't delete storage files here - that happens during reprocess
+
         
         # Save to database
         saved_product = await ShopifySyncService.save_product_to_db(product_data, brand_id, supabase)
