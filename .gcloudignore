@@ -1,0 +1,55 @@
+# This file specifies files that are *not* uploaded to Google Cloud
+# using gcloud. It follows the same syntax as .gitignore
+
+.gcloudignore
+.git
+.gitignore
+
+# Node
+node_modules/
+.next/
+frontend-nextjs/.next/
+frontend-nextjs/node_modules/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+backend/venv/
+*.egg-info/
+.pytest_cache/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation (optional, uncomment if you don't want to upload docs)
+# README.md
+# DEPLOYMENT.md
+
+# Old/unused directories
+gemini_pipeline v4/
+frontend/
+
+# Logs
+*.log
+logs/
+
+# Temp files
+temp_*
+*.tmp
+*.bak

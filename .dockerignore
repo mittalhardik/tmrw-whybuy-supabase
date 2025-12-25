@@ -1,0 +1,71 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# CI/CD
+.github
+cloudbuild.yaml
+.gcloudignore
+
+# Documentation
+README.md
+DEPLOYMENT.md
+*.md
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info
+.pytest_cache
+.coverage
+htmlcov
+.venv
+venv
+ENV
+backend/venv
+
+# Node
+node_modules
+npm-debug.log
+yarn-error.log
+.next
+frontend-nextjs/.next
+frontend-nextjs/node_modules
+
+# IDEs
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+dist
+build
+out
+
+# Logs
+*.log
+logs
+
+# Old/unused directories
+gemini_pipeline v4
+frontend
+
+# Temp files
+*.tmp
+*.bak
+temp_*

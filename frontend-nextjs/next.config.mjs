@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
   images: {
     remotePatterns: [
       {
@@ -9,6 +10,7 @@ const nextConfig = {
     ],
   },
   async rewrites() {
+    // Proxy all /api requests to FastAPI backend on port 8080
     return [
       {
         source: '/api/:path*',
