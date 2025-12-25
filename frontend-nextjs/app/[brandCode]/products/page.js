@@ -135,6 +135,8 @@ export default function Products() {
                 toast.success("Pipeline job started!", { id: toastId });
                 setSelectedProducts([]);
                 setShowHistory(true);
+                // Immediately refresh jobs to show status
+                loadJobs();
             } else {
                 throw new Error("Failed to start job");
             }
@@ -169,59 +171,48 @@ export default function Products() {
                     <h1 className="text-3xl font-bold tracking-tight text-foreground">Products</h1>
                     <p className="text-muted-foreground mt-1">Manage your catalogue and pipeline status</p>
                 </div>
-                <div className="flex gap-2">
-                    <button
-                        onClick={() => setShowHistory(true)}
-                        className="btn bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-lg shadow-sm flex items-center gap-2 transition-all"
-                    >
-                        <History size={18} />
-                        Jobs
-                    </button>
-
-
-                    <div className="relative">
-                        <button
-                            onClick={() => setShowPipelineConfig(!showPipelineConfig)}
-                            className="btn bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 px-3 py-2 rounded-lg shadow-sm transition-all"
-                            title="Pipeline Settings"
-                        >
-                            <MoreHorizontal size={18} />
-                        </button>
-
-                        {showPipelineConfig && (
-                            <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 p-3 z-50 animate-in fade-in slide-in-from-top-2">
-                                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Run Options</h3>
-                                <label className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        checked={pipelineConfig.ecommerce}
-                                        onChange={(e) => setPipelineConfig({ ...pipelineConfig, ecommerce: e.target.checked })}
-                                        className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                    />
-                                    <span className="text-sm">Ecommerce</span>
-                                </label>
-                                <label className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        checked={pipelineConfig.lookbook}
-                                        onChange={(e) => setPipelineConfig({ ...pipelineConfig, lookbook: e.target.checked })}
-                                        className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                    />
-                                    <span className="text-sm">Lookbook</span>
-                                </label>
-                            </div>
-                        )}
+                <div className="flex gap-4 items-center">
+                    <div className="flex items-center gap-4 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
+                        <label className="flex items-center gap-2 cursor-pointer select-none">
+                            <input
+                                type="checkbox"
+                                checked={pipelineConfig.ecommerce}
+                                onChange={(e) => setPipelineConfig({ ...pipelineConfig, ecommerce: e.target.checked })}
+                                className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 w-4 h-4"
+                            />
+                            <span className="text-sm font-medium text-gray-700">Ecommerce</span>
+                        </label>
+                        <div className="h-4 w-px bg-gray-300"></div>
+                        <label className="flex items-center gap-2 cursor-pointer select-none">
+                            <input
+                                type="checkbox"
+                                checked={pipelineConfig.lookbook}
+                                onChange={(e) => setPipelineConfig({ ...pipelineConfig, lookbook: e.target.checked })}
+                                className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 w-4 h-4"
+                            />
+                            <span className="text-sm font-medium text-gray-700">Lookbook</span>
+                        </label>
                     </div>
 
-                    <button
-                        onClick={() => handleRunPipeline()}
-                        disabled={selectedProducts.length === 0 || processing || (!pipelineConfig.ecommerce && !pipelineConfig.lookbook)}
-                        className="btn bg-indigo-600 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all"
-                    >
-                        <Play size={18} />
-                        Run Pipeline ({selectedProducts.length})
-                    </button>
-                    <AddProductModal currentBrand={currentBrand} onSuccess={() => loadProducts(1)} />
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => setShowHistory(true)}
+                            className="btn bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-lg shadow-sm flex items-center gap-2 transition-all"
+                        >
+                            <History size={18} />
+                            Jobs
+                        </button>
+
+                        <button
+                            onClick={() => handleRunPipeline()}
+                            disabled={selectedProducts.length === 0 || processing || (!pipelineConfig.ecommerce && !pipelineConfig.lookbook)}
+                            className="btn bg-indigo-600 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all"
+                        >
+                            <Play size={18} />
+                            Run Pipeline ({selectedProducts.length})
+                        </button>
+                        <AddProductModal currentBrand={currentBrand} onSuccess={() => loadProducts(1)} />
+                    </div>
                 </div>
             </div>
 
@@ -351,8 +342,7 @@ export default function Products() {
                             <th className="p-4 hidden md:table-cell">Vendor & Type</th>
                             <th className="p-4">Status</th>
                             <th className="p-4 hidden md:table-cell">Shopify</th>
-                            <th className="p-4 w-20">Actions</th>
-                            <th className="p-4 w-10"></th>
+                            <th className="p-4 w-24">Actions</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
@@ -424,17 +414,11 @@ export default function Products() {
                                         )}
                                     </td>
                                     <td className="p-4 align-top" onClick={(e) => e.stopPropagation()}>
-                                        <button
-                                            onClick={() => handleRunPipeline([product.product_id])}
-                                            disabled={processing}
-                                            className="text-xs bg-white border border-gray-200 hover:border-primary hover:text-primary px-2 py-1 rounded transition-colors"
+                                        <Link
+                                            href={`/${currentBrand.code}/products/${product.product_id}`}
+                                            className="btn-secondary text-xs px-3 py-1.5 rounded-lg border hover:bg-gray-50 transition-colors inline-block"
                                         >
-                                            {product.processed ? 'Reprocess' : 'Process'}
-                                        </button>
-                                    </td>
-                                    <td className="p-4 align-middle text-right" onClick={(e) => e.stopPropagation()}>
-                                        <Link href={`/${currentBrand.code}/products/${product.product_id}`} target="_blank">
-                                            <ArrowUpRight size={16} className="text-gray-300 group-hover:text-primary transition-colors" />
+                                            Open Product
                                         </Link>
                                     </td>
                                 </tr>

@@ -61,7 +61,8 @@ async def run_pipeline(
             "brand_id": brand_id,
             "status": "pending",
             "total_products": len(product_ids),
-            "progress": 0
+            "progress": 0,
+            "product_ids": product_ids 
         }
         response = supabase.table("pipeline_jobs").insert(job_data).execute()
         job_id = response.data[0]['id']
@@ -91,11 +92,20 @@ async def get_product_processing_status(product_id: str, brand_id: str, user=Dep
         # Get all active jobs (pending or running) for this brand
         response = supabase.table("pipeline_jobs").select("*").eq("brand_id", brand_id).in_("status", ["pending", "running"]).execute()
         
-        # Note: pipeline_jobs table doesn't store product_ids directly
-        # For now, we'll return if there are any active jobs for the brand
-        # A more robust solution would require storing product_ids in the job record
-        is_processing = len(response.data) > 0 if response.data else False
+        is_processing = False
+        active_jobs = []
         
-        return {"is_processing": is_processing, "active_jobs": response.data}
+        if response.data:
+            for job in response.data:
+                # Check if this product is in the job's product list
+                # product_ids column is expected to be a JSON array of strings
+                job_product_ids = job.get('product_ids', [])
+                if job_product_ids and product_id in job_product_ids:
+                    is_processing = True
+                    active_jobs.append(job)
+        
+        return {"is_processing": is_processing, "active_jobs": active_jobs}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        # Fallback to safe False if schema issue
+        print(f"Error checking status: {e}")
+        return {"is_processing": False, "error": str(e)}

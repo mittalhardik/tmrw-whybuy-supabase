@@ -216,36 +216,41 @@ export default function ProductDetailPage() {
     return (
         <div className="max-w-7xl mx-auto space-y-6 animate-in fade-in duration-300 pb-12">
             {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between gap-4">
-                <div className="flex items-start gap-4">
-                    <button onClick={() => router.push(`/${currentBrand.code}/products`)} className="mt-1 p-2 hover:bg-gray-100 rounded-full transition-colors">
-                        <ArrowLeft size={20} className="text-gray-500" />
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-100 pb-6">
+                <div className="flex items-center gap-4">
+                    <button onClick={() => router.push(`/${currentBrand.code}/products`)} className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500 hover:text-gray-900">
+                        <ArrowLeft size={20} />
                     </button>
                     <div>
-                        <div className="flex items-center gap-3 flex-wrap">
-                            <h1 className="text-2xl font-bold text-foreground">{product.title}</h1>
+                        <div className="flex items-center gap-3 flex-wrap mb-1">
+                            <h1 className="text-2xl font-bold text-foreground tracking-tight">{product.title}</h1>
 
                             {/* Sync Status Badges */}
                             {product.shopify_id && (
-                                <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full border border-blue-200 flex items-center gap-1">
-                                    <CheckCircle size={10} /> Synced from Shopify
+                                <span className="px-2 py-0.5 bg-blue-50 text-blue-700 text-xs font-medium rounded-full border border-blue-100 flex items-center gap-1">
+                                    <CheckCircle size={10} /> Synced
                                 </span>
                             )}
 
                             {product.push_status === 'pushed' && (
-                                <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full border border-green-200 flex items-center gap-1">
-                                    <CheckCircle size={10} /> Published to Shopify
+                                <span className="px-2 py-0.5 bg-green-50 text-green-700 text-xs font-medium rounded-full border border-green-100 flex items-center gap-1">
+                                    <CheckCircle size={10} /> Published
                                 </span>
                             )}
                         </div>
-                        <p className="text-muted-foreground text-sm mt-1 font-mono">Product ID: {product.product_id}</p>
-                        {product.shopify_handle && (
-                            <p className="text-muted-foreground text-xs mt-0.5">Handle: {product.shopify_handle}</p>
-                        )}
+                        <div className="flex items-center gap-4 text-xs text-muted-foreground font-mono">
+                            <span>ID: {product.product_id}</span>
+                            {product.shopify_handle && (
+                                <>
+                                    <span className="text-gray-300">•</span>
+                                    <span>{product.shopify_handle}</span>
+                                </>
+                            )}
+                        </div>
                     </div>
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-3 items-end sm:items-center w-full md:w-auto">
                     {/* Refresh from Shopify - only show if product is synced */}
                     {product.shopify_id && (
                         <button
@@ -271,74 +276,64 @@ export default function ProductDetailPage() {
                                     toast.error(error.message, { id: toastId });
                                 }
                             }}
-                            className="btn bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 shadow px-4 py-2 rounded-lg flex items-center gap-2 transition-all"
+                            className="btn bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 shadow-sm px-3 py-2 rounded-lg flex items-center gap-2 transition-all h-10"
+                            title="Refresh Data"
                         >
-                            <RefreshCw size={18} />
-                            Refresh
+                            <RefreshCw size={16} />
                         </button>
                     )}
 
                     {/* Pipeline Controls */}
-                    <div className="relative">
-                        <button
-                            onClick={() => setShowPipelineConfig(!showPipelineConfig)}
-                            disabled={processing || isProcessing}
-                            className="btn bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg px-6 py-2 rounded-lg flex items-center gap-2 transition-all disabled:opacity-50"
-                        >
-                            <Play size={18} />
-                            {processing || isProcessing ? 'Processing...' : processed ? 'Reprocess' : 'Process'}
-                        </button>
-
-                        {showPipelineConfig && (
-                            <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 p-4 z-50 animate-in fade-in slide-in-from-top-2">
-                                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Pipeline Options</h3>
-                                <div className="space-y-2 mb-4">
-                                    <label className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            checked={pipelineConfig.ecommerce}
-                                            onChange={(e) => setPipelineConfig({ ...pipelineConfig, ecommerce: e.target.checked })}
-                                            className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                        />
-                                        <span className="text-sm font-medium">Ecommerce</span>
-                                    </label>
-                                    <label className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            checked={pipelineConfig.lookbook}
-                                            onChange={(e) => setPipelineConfig({ ...pipelineConfig, lookbook: e.target.checked })}
-                                            className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                        />
-                                        <span className="text-sm font-medium">Lookbook</span>
-                                    </label>
-                                </div>
-                                <button
-                                    onClick={handleRunPipeline}
-                                    disabled={!pipelineConfig.ecommerce && !pipelineConfig.lookbook}
-                                    className="w-full btn bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    Start Pipeline
-                                </button>
-                            </div>
-                        )}
+                    <div className="flex items-center gap-2 bg-gray-50 p-1 rounded-lg border border-gray-100 h-10">
+                        <label className="flex items-center gap-1.5 px-2 cursor-pointer select-none">
+                            <input
+                                type="checkbox"
+                                checked={pipelineConfig.ecommerce}
+                                onChange={(e) => setPipelineConfig({ ...pipelineConfig, ecommerce: e.target.checked })}
+                                className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 w-3.5 h-3.5"
+                                disabled={processing || isProcessing}
+                            />
+                            <span className="text-xs font-medium text-gray-700">Ecommerce</span>
+                        </label>
+                        <div className="h-4 w-px bg-gray-300"></div>
+                        <label className="flex items-center gap-1.5 px-2 cursor-pointer select-none">
+                            <input
+                                type="checkbox"
+                                checked={pipelineConfig.lookbook}
+                                onChange={(e) => setPipelineConfig({ ...pipelineConfig, lookbook: e.target.checked })}
+                                className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 w-3.5 h-3.5"
+                                disabled={processing || isProcessing}
+                            />
+                            <span className="text-xs font-medium text-gray-700">Lookbook</span>
+                        </label>
                     </div>
 
-                    {processed && !isProcessing ? (
+                    <button
+                        onClick={handleRunPipeline}
+                        disabled={processing || isProcessing || (!pipelineConfig.ecommerce && !pipelineConfig.lookbook)}
+                        className="btn bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg px-4 py-2 rounded-lg flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed h-10 whitespace-nowrap"
+                    >
+                        {processing || isProcessing ? (
+                            <>
+                                <RefreshCw size={18} className="animate-spin" />
+                                Processing...
+                            </>
+                        ) : (
+                            <>
+                                <Play size={18} />
+                                {processed ? 'Reprocess' : 'Run Pipeline'}
+                            </>
+                        )}
+                    </button>
+
+                    {processed && !isProcessing && (
                         <button
                             onClick={handlePushToShopify}
                             disabled={pushing}
-                            className={`btn ${product.push_status === 'pushed' ? 'bg-green-600 hover:bg-green-700' : 'bg-black hover:bg-gray-800'} text-white shadow-lg px-6 py-2 rounded-lg flex items-center gap-2 transition-all`}
+                            className={`btn ${product.push_status === 'pushed' ? 'bg-green-600 hover:bg-green-700' : 'bg-black hover:bg-gray-800'} text-white shadow-lg px-4 py-2 rounded-lg flex items-center gap-2 transition-all h-10 whitespace-nowrap`}
                         >
                             <ShoppingBag size={18} />
                             {pushing ? 'Syncing...' : product.push_status === 'pushed' ? 'Update Shopify' : 'Push to Shopify'}
-                        </button>
-                    ) : isProcessing ? (
-                        <button disabled className="btn bg-gray-100 text-gray-400 border border-gray-200 px-6 py-2 rounded-lg flex items-center gap-2 cursor-not-allowed">
-                            <RefreshCw size={18} className="animate-spin" /> Processing...
-                        </button>
-                    ) : (
-                        <button disabled className="btn bg-gray-100 text-gray-400 border border-gray-200 px-6 py-2 rounded-lg flex items-center gap-2 cursor-not-allowed">
-                            <ShoppingBag size={18} /> Not Processed
                         </button>
                     )}
                 </div>
