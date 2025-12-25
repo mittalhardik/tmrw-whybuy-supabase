@@ -43,7 +43,13 @@ function BrandSelectionContent() {
                             onClick={() => handleSelectBrand(brand.code)}
                             className="bg-white p-6 rounded-xl shadow-sm hover:shadow-xl hover:scale-105 transition-all cursor-pointer border border-transparent hover:border-indigo-100 group"
                         >
-                            <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg mb-4 group-hover:shadow-lg transition-all"></div>
+                            {brand.logo ? (
+                                <div className="w-12 h-12 mb-4">
+                                    <img src={brand.logo} alt={brand.name} className="w-full h-full object-contain" />
+                                </div>
+                            ) : (
+                                <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg mb-4 group-hover:shadow-lg transition-all"></div>
+                            )}
                             <h3 className="text-xl font-semibold text-gray-900 mb-2">{brand.name}</h3>
                             <p className="text-gray-500 text-sm">Workspace code: {brand.code}</p>
                         </div>

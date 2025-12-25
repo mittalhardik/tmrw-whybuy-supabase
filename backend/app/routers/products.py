@@ -51,7 +51,7 @@ async def push_to_shopify(payload: PushPayload, user=Depends(get_current_user)):
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/")
+@router.get("")
 async def list_products(
     brand_id: str,
     page: int = 1,
@@ -78,7 +78,11 @@ async def list_products(
         if processed is not None:
             query = query.eq("processed", processed)
         if push_status:
-            query = query.eq("push_status", push_status)
+            if push_status == 'pending':
+                # Pending can be explicit 'pending' or NULL (default)
+                query = query.or_("push_status.eq.pending,push_status.is.null")
+            else:
+                query = query.eq("push_status", push_status)
             
         # Pagination
         start = (page - 1) * limit

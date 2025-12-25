@@ -48,9 +48,25 @@ export const BrandProvider = ({ children }) => {
 
     const loadBrands = async () => {
         try {
-            const { data, error } = await supabase.from('brands').select('*');
+            const { data: brandsData, error } = await supabase.from('brands').select('*');
             if (error) throw error;
-            setBrands(data);
+
+            let finalBrands = brandsData;
+
+            // Fetch user permissions
+            const { data: userData, error: userError } = await supabase
+                .from('users')
+                .select('allowed_brands')
+                .eq('id', user.id)
+                .single();
+
+            if (!userError && userData) {
+                // If user record exists, strictly filter
+                const allowed = userData.allowed_brands || [];
+                finalBrands = brandsData.filter(b => allowed.includes(b.code));
+            }
+
+            setBrands(finalBrands);
         } catch (error) {
             console.error('Error loading brands:', error);
         } finally {

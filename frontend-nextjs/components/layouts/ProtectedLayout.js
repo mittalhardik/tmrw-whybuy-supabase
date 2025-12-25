@@ -20,58 +20,58 @@ export default function ProtectedLayout({ children }) {
     };
 
     return (
-        <div className="flex h-screen bg-gradient-to-br from-gray-50 to-gray-100/50 font-sans text-foreground">
-            {/* Sidebar */}
-            <div className="w-64 bg-white/90 backdrop-blur-xl border-r border-gray-200/80 shadow-xl flex flex-col z-20">
-                {/* Logo Section */}
-                <div className="p-6 border-b border-gray-200/80 flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 rounded-xl shadow-lg flex items-center justify-center">
-                        <span className="text-white font-bold text-lg">G</span>
+        <div className="flex flex-col h-screen bg-gray-50 font-sans text-foreground">
+            {/* Header */}
+            <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4 z-50">
+                <div className="max-w-7xl mx-auto flex justify-between items-center">
+                    {/* Left: Brand Logo & Nav */}
+                    <div className="flex items-center gap-8">
+                        {/* Brand Logo */}
+                        <div className="flex items-center gap-3">
+                            {currentBrand?.logo ? (
+                                <img src={currentBrand.logo} alt={currentBrand.name} className="h-8 w-auto object-contain" />
+                            ) : (
+                                <div className="w-8 h-8 bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 rounded-lg shadow-sm flex items-center justify-center">
+                                    <span className="text-white font-bold text-sm">{currentBrand?.name?.charAt(0) || 'B'}</span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Navigation */}
+                        <nav className="hidden md:flex items-center gap-1">
+                            <NavItem href={`/${brandCode}/products`} icon={<ShoppingBag size={18} />} label="Products" pathname={pathname} />
+                        </nav>
                     </div>
-                    <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600">Gemini</h1>
-                </div>
 
-                {/* Navigation */}
-                <nav className="flex-1 p-4 space-y-2">
-                    <NavItem href={`/${brandCode}/products`} icon={<ShoppingBag size={20} />} label="Products" pathname={pathname} />
-                </nav>
+                    {/* Right: Actions */}
+                    <div className="flex items-center gap-4">
+                        <Link
+                            href="/"
+                            className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
+                            title="Switch Brand"
+                        >
+                            <List size={20} />
+                        </Link>
 
-                {/* Footer Actions */}
-                <div className="p-4 border-t border-gray-200/80 space-y-1">
-                    <button
-                        onClick={handleSignOut}
-                        className="flex items-center space-x-3 text-gray-600 hover:text-red-500 hover:bg-red-50 w-full p-3 rounded-lg transition-all duration-200"
-                    >
-                        <LogOut size={20} />
-                        <span className="font-medium">Sign Out</span>
-                    </button>
+                        <div className="w-px h-6 bg-gray-200"></div>
+
+                        <button
+                            onClick={handleSignOut}
+                            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                        >
+                            <LogOut size={18} />
+                            <span>Sign Out</span>
+                        </button>
+                    </div>
                 </div>
-            </div>
+            </header>
 
             {/* Main Content */}
-            <div className="flex-1 flex flex-col overflow-hidden">
-                {/* Header */}
-                <header className="bg-white/90 backdrop-blur-xl shadow-sm border-b border-gray-200/80 p-4 flex justify-between items-center z-10">
-                    <div className="flex items-center space-x-3">
-                        <div className="px-4 py-2 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border border-indigo-100">
-                            <span className="text-sm font-semibold text-indigo-700">{currentBrand?.name || 'Loading...'}</span>
-                        </div>
-                    </div>
-
-                    <Link
-                        href="/"
-                        className="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200 border border-transparent hover:border-indigo-100"
-                    >
-                        <List size={18} />
-                        <span className="font-medium">Switch Brand</span>
-                    </Link>
-                </header>
-
-                {/* Page Content */}
-                <main className="flex-1 overflow-auto p-6">
+            <main className="flex-1 overflow-auto p-6">
+                <div className="max-w-7xl mx-auto">
                     {children}
-                </main>
-            </div>
+                </div>
+            </main>
         </div>
     );
 }
@@ -82,13 +82,13 @@ function NavItem({ href, icon, label, pathname }) {
     return (
         <Link
             href={href}
-            className={`flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 ${isActive
-                    ? 'bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-600 shadow-sm border border-indigo-100'
-                    : 'text-gray-600 hover:bg-gray-50 border border-transparent'
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${isActive
+                ? 'bg-indigo-50 text-indigo-700'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                 }`}
         >
             {icon}
-            <span className="font-semibold">{label}</span>
+            <span>{label}</span>
         </Link>
     );
 }

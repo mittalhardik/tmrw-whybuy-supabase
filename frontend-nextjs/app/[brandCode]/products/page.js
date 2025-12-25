@@ -252,26 +252,83 @@ export default function Products() {
             {/* Active Filters Panel */}
             {
                 showFilters && (
-                    <div className="bg-white/50 border border-border p-4 rounded-xl grid grid-cols-2 md:grid-cols-4 gap-4 animate-in slide-in-from-top-2">
-                        <select
-                            className="p-2 rounded-lg border bg-white text-sm"
-                            value={filters.processed === null ? 'all' : filters.processed}
-                            onChange={(e) => setFilters({ ...filters, processed: e.target.value === 'all' ? null : e.target.value === 'true' })}
-                        >
-                            <option value="all">Processing Status: All</option>
-                            <option value="true">Processed</option>
-                            <option value="false">Pending</option>
-                        </select>
+                    <div className="bg-white/50 border border-border p-4 rounded-xl space-y-4 animate-in slide-in-from-top-2">
+                        {/* Processing Status */}
+                        <div>
+                            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Processing Status</h3>
+                            <div className="flex flex-wrap gap-2">
+                                <button
+                                    onClick={() => setFilters({ ...filters, processed: null })}
+                                    className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${filters.processed === null
+                                        ? 'bg-primary text-primary-foreground border-primary'
+                                        : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+                                        }`}
+                                >
+                                    All
+                                </button>
+                                <button
+                                    onClick={() => setFilters({ ...filters, processed: true })}
+                                    className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${filters.processed === true
+                                        ? 'bg-primary text-primary-foreground border-primary'
+                                        : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+                                        }`}
+                                >
+                                    Processed
+                                </button>
+                                <button
+                                    onClick={() => setFilters({ ...filters, processed: false })}
+                                    className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${filters.processed === false
+                                        ? 'bg-primary text-primary-foreground border-primary'
+                                        : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+                                        }`}
+                                >
+                                    Pending
+                                </button>
+                            </div>
+                        </div>
 
-                        <select
-                            className="p-2 rounded-lg border bg-white text-sm"
-                            value={filters.push_status || 'all'}
-                            onChange={(e) => setFilters({ ...filters, push_status: e.target.value === 'all' ? null : e.target.value })}
-                        >
-                            <option value="all">Shopify Status: All</option>
-                            <option value="pushed">Pushed</option>
-                            <option value="pending">Not Pushed</option>
-                        </select>
+                        {/* Shopify Status */}
+                        <div>
+                            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Shopify Status</h3>
+                            <div className="flex flex-wrap gap-2">
+                                <button
+                                    onClick={() => setFilters({ ...filters, push_status: null })}
+                                    className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${!filters.push_status
+                                        ? 'bg-primary text-primary-foreground border-primary'
+                                        : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+                                        }`}
+                                >
+                                    All
+                                </button>
+                                <button
+                                    onClick={() => setFilters({ ...filters, push_status: 'pushed' })}
+                                    className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${filters.push_status === 'pushed'
+                                        ? 'bg-primary text-primary-foreground border-primary'
+                                        : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+                                        }`}
+                                >
+                                    Pushed
+                                </button>
+                                <button
+                                    onClick={() => setFilters({ ...filters, push_status: 'pending' })}
+                                    className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${filters.push_status === 'pending'
+                                        ? 'bg-primary text-primary-foreground border-primary'
+                                        : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+                                        }`}
+                                >
+                                    Not Pushed
+                                </button>
+                                <button
+                                    onClick={() => setFilters({ ...filters, push_status: 'failed' })}
+                                    className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${filters.push_status === 'failed'
+                                        ? 'bg-primary text-primary-foreground border-primary'
+                                        : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+                                        }`}
+                                >
+                                    Failed
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 )
             }

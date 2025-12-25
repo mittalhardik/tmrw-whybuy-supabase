@@ -24,7 +24,7 @@ export default function ProductDetailPage() {
     const [isProcessing, setIsProcessing] = useState(false);
     const [showPipelineConfig, setShowPipelineConfig] = useState(false);
     const [pipelineConfig, setPipelineConfig] = useState({ ecommerce: true, lookbook: true });
-    const [activeTab, setActiveTab] = useState('metadata');
+    const [activeTab, setActiveTab] = useState('ecommerce');
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
     useEffect(() => {
@@ -469,7 +469,7 @@ export default function ProductDetailPage() {
                     <div className="glass rounded-xl overflow-hidden min-h-[600px] flex flex-col">
                         {/* Tab Headers */}
                         <div className="flex border-b bg-gray-50/50 overflow-x-auto">
-                            <TabButton id="metadata" label="Metadata" icon={<FileText size={18} />} active={activeTab} set={setActiveTab} />
+
                             <TabButton id="ecommerce" label="E-Commerce Images" icon={<ImageIcon size={18} />} active={activeTab} set={setActiveTab} />
                             <TabButton id="lookbook" label="Lookbook" icon={<Sparkles size={18} />} active={activeTab} set={setActiveTab} />
                             {product.shopify_id && <TabButton id="shopify" label="Shopify Data" icon={<ShoppingBag size={18} />} active={activeTab} set={setActiveTab} />}
@@ -478,53 +478,7 @@ export default function ProductDetailPage() {
 
                         {/* Tab Content */}
                         <div className="p-6 flex-1 bg-white/40">
-                            {/* Metadata */}
-                            {activeTab === 'metadata' && (
-                                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2">
-                                    <div className="space-y-4">
-                                        <div className="p-4 bg-white rounded-lg border shadow-sm">
-                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-2">Optimized Title</label>
-                                            <div className="text-lg font-medium text-gray-900">
-                                                {outputs.step1_metadata?.optimized_title || product.title}
-                                            </div>
-                                        </div>
 
-                                        <div className="p-4 bg-white rounded-lg border shadow-sm">
-                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-2">Optimized Description</label>
-                                            <div className="prose prose-sm max-w-none text-gray-700 leading-relaxed whitespace-pre-line">
-                                                {outputs.step1_metadata?.optimized_description || "No description generated yet."}
-                                            </div>
-                                        </div>
-
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <div className="p-4 bg-white rounded-lg border shadow-sm">
-                                                <label className="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-2">SEO Keywords</label>
-                                                <div className="flex flex-wrap gap-2">
-                                                    {outputs.step1_metadata?.seo_keywords?.map((k, i) => (
-                                                        <span key={i} className="px-2 py-1 bg-indigo-50 text-indigo-700 rounded text-xs font-medium border border-indigo-100">
-                                                            {k}
-                                                        </span>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                            <div className="p-4 bg-white rounded-lg border shadow-sm">
-                                                <label className="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-2">Extracted Attributes</label>
-                                                <div className="flex flex-wrap gap-2">
-                                                    {outputs.step2_attributes ? (
-                                                        Object.entries(outputs.step2_attributes).map(([k, v]) => (
-                                                            typeof v === 'string' && (
-                                                                <span key={k} className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs border">
-                                                                    <span className="font-semibold">{k}:</span> {v}
-                                                                </span>
-                                                            )
-                                                        ))
-                                                    ) : <span className="text-gray-400 text-sm">No attributes yet.</span>}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
 
                             {/* E-Commerce Images */}
                             {activeTab === 'ecommerce' && (
